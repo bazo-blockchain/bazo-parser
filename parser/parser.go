@@ -8,7 +8,7 @@ import (
 
 	"log"
 
-	"github.com/pkg/errors"
+	"errors"
 )
 
 func Parse(sourceCode string) []byte {
@@ -66,7 +66,10 @@ func Parse(sourceCode string) []byte {
 				val := new(big.Int)
 				val.SetInt64(int64(address))
 
-				instructionSet = append(instructionSet, val.Bytes()[0])
+				if len(val.Bytes()) <= 1 {
+					instructionSet = append(instructionSet, 0)
+				}
+				instructionSet = append(instructionSet, val.Bytes()[:1]...)
 			}
 		}
 	}
@@ -147,6 +150,10 @@ func Tokenize(sourceCode string) ([][]Token, map[string]int) {
 				length := len(val.Bytes())
 				addressCounter += length + 1
 			}
+		}
+
+		if opCode.Name == "callif" || opCode.Name == "call" || opCode.Name == "jmp" || opCode.Name == "jmpif" {
+			addressCounter += 2
 		}
 		lineCount++
 	}

@@ -31,6 +31,7 @@ const (
 	JMP
 	JMPIF
 	CALL
+	CALLIF
 	CALLEXT
 	RET
 	SIZE
@@ -39,6 +40,7 @@ const (
 	LOAD
 	SLOAD
 	ADDRESS // Address of account
+	ISSUER // Issuer of account
 	BALANCE // Balance of account
 	CALLER
 	CALLVAL  // Amount of bazo coins transacted in transaction
@@ -46,6 +48,7 @@ const (
 	NEWMAP
 	MAPPUSH
 	MAPGETVAL
+	MAPSETVAL
 	MAPREMOVE
 	NEWARR
 	ARRAPPEND
@@ -94,6 +97,7 @@ var OpCodes = map[int]OpCode{
 	JMP:       {"jmp", 1, []int{LABEL}, 1},
 	JMPIF:     {"jmpif", 1, []int{LABEL}, 1},
 	CALL:      {"call", 2, []int{LABEL, BYTE}, 1},
+	CALLIF:    {"callif", 2, []int{LABEL, BYTES}, 1},
 	CALLEXT:   {"callext", 3, []int{BYTES, BYTES, BYTE}, 1},
 	RET:       {"ret", 0, nil, 1},
 	SIZE:      {"size", 0, nil, 1},
@@ -102,6 +106,7 @@ var OpCodes = map[int]OpCode{
 	LOAD:      {"load", 1, []int{BYTE}, 1},
 	SLOAD:     {"sload", 1, []int{INT}, 1},
 	ADDRESS:   {"address", 0, nil, 1},
+	ISSUER:   {"issuer", 0, nil, 1},
 	BALANCE:   {"balance", 0, nil, 1},
 	CALLER:    {"caller", 0, nil, 1},
 	CALLVAL:   {"callval", 0, nil, 1},
@@ -109,6 +114,7 @@ var OpCodes = map[int]OpCode{
 	NEWMAP:    {"newmap", 0, nil, 1},
 	MAPPUSH:   {"mappush", 0, nil, 1},
 	MAPGETVAL: {"mapgetval", 0, nil, 1},
+	MAPSETVAL: {"mapsetval", 0, nil, 1},
 	MAPREMOVE: {"mapremove", 0, nil, 1},
 	NEWARR:    {"newarr", 0, nil, 1},
 	ARRAPPEND: {"arrappend", 0, nil, 1},
