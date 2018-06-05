@@ -40,12 +40,13 @@ const (
 	LOAD
 	SLOAD
 	ADDRESS // Address of account
-	ISSUER // Issuer of account
+	ISSUER  // Issuer of account
 	BALANCE // Balance of account
 	CALLER
 	CALLVAL  // Amount of bazo coins transacted in transaction
 	CALLDATA // Parameters and function signature hash
 	NEWMAP
+	MAPHASKEY
 	MAPPUSH
 	MAPGETVAL
 	MAPSETVAL
@@ -77,7 +78,7 @@ type OpCode struct {
 var OpCodes = map[int]OpCode{
 	PUSH:      {"push", 1, []int{INT}, 1},
 	DUP:       {"dup", 0, nil, 1},
-	ROLL:      {"roll", 1, []int{INT}, 1},
+	ROLL:      {"roll", 1, []int{BYTE}, 1},
 	POP:       {"pop", 0, nil, 1},
 	ADD:       {"add", 0, nil, 1},
 	SUB:       {"sub", 0, nil, 1},
@@ -101,17 +102,18 @@ var OpCodes = map[int]OpCode{
 	CALLEXT:   {"callext", 3, []int{BYTES, BYTES, BYTE}, 1},
 	RET:       {"ret", 0, nil, 1},
 	SIZE:      {"size", 0, nil, 1},
-	STORE:     {"store", 0, nil, 1},
-	SSTORE:    {"sstore", 1, []int{INT}, 1},
+	STORE:     {"store", 0, []int{BYTE}, 1},
+	SSTORE:    {"sstore", 1, []int{BYTE}, 1},
 	LOAD:      {"load", 1, []int{BYTE}, 1},
-	SLOAD:     {"sload", 1, []int{INT}, 1},
+	SLOAD:     {"sload", 1, []int{BYTE}, 1},
 	ADDRESS:   {"address", 0, nil, 1},
-	ISSUER:   {"issuer", 0, nil, 1},
+	ISSUER:    {"issuer", 0, nil, 1},
 	BALANCE:   {"balance", 0, nil, 1},
 	CALLER:    {"caller", 0, nil, 1},
 	CALLVAL:   {"callval", 0, nil, 1},
 	CALLDATA:  {"calldata", 0, nil, 1},
 	NEWMAP:    {"newmap", 0, nil, 1},
+	MAPHASKEY: {"maphaskey", 0, nil, 1},
 	MAPPUSH:   {"mappush", 0, nil, 1},
 	MAPGETVAL: {"mapgetval", 0, nil, 1},
 	MAPSETVAL: {"mapsetval", 0, nil, 1},

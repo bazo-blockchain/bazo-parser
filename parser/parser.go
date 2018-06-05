@@ -2,7 +2,6 @@ package parser
 
 import (
 	"bufio"
-	"fmt"
 	"strings"
 
 	"math/big"
@@ -73,7 +72,6 @@ func Parse(sourceCode string) []byte {
 				instructionSet = append(instructionSet, val.Bytes()[:1]...)
 			}
 		}
-		fmt.Println(instructionSet[lineCount])
 	}
 	return instructionSet
 }
@@ -157,7 +155,6 @@ func Tokenize(sourceCode string) ([][]Token, map[string]int) {
 		if opCode.Name == "callif" || opCode.Name == "call" || opCode.Name == "jmp" || opCode.Name == "jmpif" {
 			addressCount += 2
 		}
-		fmt.Println(tokenSet[lineCount])
 		lineCount++
 	}
 	return tokenSet, labels
