@@ -2,6 +2,7 @@ package parser
 
 import (
 	"bufio"
+	"fmt"
 	"strings"
 
 	"math/big"
@@ -72,13 +73,14 @@ func Parse(sourceCode string) []byte {
 				instructionSet = append(instructionSet, val.Bytes()[:1]...)
 			}
 		}
+		fmt.Println(instructionSet[lineCount])
 	}
 	return instructionSet
 }
 
 func Tokenize(sourceCode string) ([][]Token, map[string]int) {
 	var tokenSet [][]Token
-	var addressCounter int
+	var addressCount int
 	var lineCount int
 	labels := make(map[string]int)
 
@@ -105,7 +107,7 @@ func Tokenize(sourceCode string) ([][]Token, map[string]int) {
 		}
 
 		if firstWord[len(firstWord)-1:] == ":" {
-			labels[firstWord[:len(firstWord)-1]] = addressCounter - 2
+			labels[firstWord[:len(firstWord)-1]] = addressCount - 2
 			continue
 		}
 
@@ -131,12 +133,12 @@ func Tokenize(sourceCode string) ([][]Token, map[string]int) {
 
 		// Handle opCode
 		tokenSet[lineCount] = append(tokenSet[lineCount], Token{tokenType: OPCODE, value: strings.ToUpper(opCode.Name)})
-		addressCounter++
+		addressCount++
 
 		// Handle arguments if opCode has any
 		for i := 0; i < opCode.Nargs; i++ {
 			tokenSet[lineCount] = append(tokenSet[lineCount], Token{tokenType: opCode.ArgTypes[i], value: words[i+1]})
-			addressCounter++
+			addressCount++
 		}
 
 		// Handle variable int length
@@ -145,16 +147,17 @@ func Tokenize(sourceCode string) ([][]Token, map[string]int) {
 			val.SetString(words[1], 10)
 
 			if val.String() == "0" {
-				addressCounter += 2
+				addressCount += 2
 			} else {
 				length := len(val.Bytes())
-				addressCounter += length + 1
+				addressCount += length + 1
 			}
 		}
 
 		if opCode.Name == "callif" || opCode.Name == "call" || opCode.Name == "jmp" || opCode.Name == "jmpif" {
-			addressCounter += 2
+			addressCount += 2
 		}
+		fmt.Println(tokenSet[lineCount])
 		lineCount++
 	}
 	return tokenSet, labels
