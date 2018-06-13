@@ -161,7 +161,6 @@ func Tokenize(sourceCode string) ([][]Token, map[string]int) {
 				addressCounter += 2
 			}
 		}
-
 		lineCount++
 	}
 	return tokenSet, labels

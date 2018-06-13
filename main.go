@@ -26,7 +26,7 @@ func main() {
 	contractAsString := string(contract) // convert content to a 'string'
 
 	instructionCode := parser.Parse(contractAsString)
-	for _, v  := range instructionCode {
-		fmt.Printf( "%v, ", v)
+	for _, v := range instructionCode {
+		fmt.Printf("%v, ", v)
 	}
 }
