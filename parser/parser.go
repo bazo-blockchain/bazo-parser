@@ -78,7 +78,7 @@ func Parse(sourceCode string) []byte {
 
 func Tokenize(sourceCode string) ([][]Token, map[string]int) {
 	var tokenSet [][]Token
-	var addressCounter int
+	var addressCount int
 	var lineCount int
 	labels := make(map[string]int)
 
@@ -105,7 +105,7 @@ func Tokenize(sourceCode string) ([][]Token, map[string]int) {
 		}
 
 		if firstWord[len(firstWord)-1:] == ":" {
-			labels[firstWord[:len(firstWord)-1]] = addressCounter - 2
+			labels[firstWord[:len(firstWord)-1]] = addressCount - 2
 			continue
 		}
 
@@ -131,7 +131,7 @@ func Tokenize(sourceCode string) ([][]Token, map[string]int) {
 
 		// Handle opCode
 		tokenSet[lineCount] = append(tokenSet[lineCount], Token{tokenType: OPCODE, value: strings.ToUpper(opCode.Name)})
-		addressCounter++
+		addressCount++
 
 		for i, argType := range opCode.ArgTypes {
 			switch argType {
@@ -142,23 +142,23 @@ func Tokenize(sourceCode string) ([][]Token, map[string]int) {
 				val.SetString(words[1], 10)
 
 				if val.String() == "0" {
-					addressCounter += 3
+					addressCount += 3
 				} else {
 					length := len(val.Bytes())
-					addressCounter += length + 2
+					addressCount += length + 2
 				}
 
 			case BYTE:
 				tokenSet[lineCount] = append(tokenSet[lineCount], Token{tokenType: argType, value: words[i+1]})
-				addressCounter++
+				addressCount++
 
 			case ADDR:
 				tokenSet[lineCount] = append(tokenSet[lineCount], Token{tokenType: argType, value: words[i+1]})
-				addressCounter += 32
+				addressCount += 32
 
 			case LABEL:
 				tokenSet[lineCount] = append(tokenSet[lineCount], Token{tokenType: argType, value: words[i+1]})
-				addressCounter += 2
+				addressCount += 2
 			}
 		}
 		lineCount++
