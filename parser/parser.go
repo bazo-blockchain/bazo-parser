@@ -28,7 +28,7 @@ func Parse(sourceCode string) []byte {
 
 				instructionSet = append(instructionSet, byte(opCode))
 
-			case INT:
+			case BYTES:
 				val := new(big.Int)
 				val.SetString(token.value, 10)
 
@@ -54,7 +54,7 @@ func Parse(sourceCode string) []byte {
 
 				instructionSet = append(instructionSet, val.Bytes()...)
 
-			case BYTES:
+			case ADDR:
 				val := new(big.Int)
 				val.SetString(token.value, 16)
 
@@ -133,28 +133,35 @@ func Tokenize(sourceCode string) ([][]Token, map[string]int) {
 		tokenSet[lineCount] = append(tokenSet[lineCount], Token{tokenType: OPCODE, value: strings.ToUpper(opCode.Name)})
 		addressCounter++
 
-		// Handle arguments if opCode has any
-		for i := 0; i < opCode.Nargs; i++ {
-			tokenSet[lineCount] = append(tokenSet[lineCount], Token{tokenType: opCode.ArgTypes[i], value: words[i+1]})
-			addressCounter++
-		}
+		for i, argType := range opCode.ArgTypes {
+			switch argType {
+			case BYTES:
+				tokenSet[lineCount] = append(tokenSet[lineCount], Token{tokenType: argType, value: words[i+1]})
 
-		// Handle variable int length
-		if opCode.Name == "push" {
-			val := new(big.Int)
-			val.SetString(words[1], 10)
+				val := new(big.Int)
+				val.SetString(words[1], 10)
 
-			if val.String() == "0" {
+				if val.String() == "0" {
+					addressCounter += 3
+				} else {
+					length := len(val.Bytes())
+					addressCounter += length + 2
+				}
+
+			case BYTE:
+				tokenSet[lineCount] = append(tokenSet[lineCount], Token{tokenType: argType, value: words[i+1]})
+				addressCounter++
+
+			case ADDR:
+				tokenSet[lineCount] = append(tokenSet[lineCount], Token{tokenType: argType, value: words[i+1]})
+				addressCounter += 32
+
+			case LABEL:
+				tokenSet[lineCount] = append(tokenSet[lineCount], Token{tokenType: argType, value: words[i+1]})
 				addressCounter += 2
-			} else {
-				length := len(val.Bytes())
-				addressCounter += length + 1
 			}
 		}
 
-		if opCode.Name == "callif" || opCode.Name == "call" || opCode.Name == "jmp" || opCode.Name == "jmpif" {
-			addressCounter += 2
-		}
 		lineCount++
 	}
 	return tokenSet, labels
